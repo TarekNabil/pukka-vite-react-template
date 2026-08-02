@@ -1,65 +1,83 @@
-// src/App.tsx
-
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import cloudflareLogo from "./assets/Cloudflare_Logo.svg";
-import honoLogo from "./assets/hono.svg";
 import "./App.css";
 
+const waitlistEndpoint = import.meta.env.VITE_WAITLIST_ENDPOINT;
+
+async function submitWaitlistEmail(email: string) {
+	if (!waitlistEndpoint) {
+		throw new Error("Waitlist endpoint is not configured.");
+	}
+
+	const response = await fetch(waitlistEndpoint, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ email }),
+	});
+
+	if (!response.ok) {
+		throw new Error("Failed to save the email.");
+	}
+}
+
 function App() {
-	const [count, setCount] = useState(0);
-	const [name, setName] = useState("unknown");
+	const [email, setEmail] = useState("");
+	const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+	const [message, setMessage] = useState("");
+
+	async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+		event.preventDefault();
+
+		if (!email.trim()) {
+			setStatus("error");
+			setMessage("Please enter an email address.");
+			return;
+		}
+
+		try {
+			setStatus("submitting");
+			setMessage("");
+			await submitWaitlistEmail(email.trim());
+			setStatus("success");
+			setMessage("Thanks, you are on the waitlist.");
+			setEmail("");
+		} catch {
+			setStatus("error");
+			setMessage("Could not save your email yet. Please try again later.");
+		}
+	}
 
 	return (
-		<>
-			<div>
-				<a href="https://vite.dev" target="_blank">
-					<img src={viteLogo} className="logo" alt="Vite logo" />
-				</a>
-				<a href="https://react.dev" target="_blank">
-					<img src={reactLogo} className="logo react" alt="React logo" />
-				</a>
-				<a href="https://hono.dev/" target="_blank">
-					<img src={honoLogo} className="logo cloudflare" alt="Hono logo" />
-				</a>
-				<a href="https://workers.cloudflare.com/" target="_blank">
-					<img
-						src={cloudflareLogo}
-						className="logo cloudflare"
-						alt="Cloudflare logo"
+		<main className="landing-page">
+			<h1>
+				Good things come
+				<br />
+				to those <span className="title-emphasis">who wait.</span>
+			</h1>
+			<div className="newsletter-block">
+				<p className="eyebrow">khomor waitlist</p>
+				<form className="newsletter-form" onSubmit={handleSubmit}>
+					<label className="sr-only" htmlFor="email">
+						Email address
+					</label>
+					<input
+						id="email"
+						type="email"
+						name="email"
+						placeholder="name@email.com"
+						autoComplete="email"
+						value={email}
+						onChange={(event) => setEmail(event.target.value)}
+						disabled={status === "submitting"}
 					/>
-				</a>
+					<button type="submit" disabled={status === "submitting"}>
+						{status === "submitting" ? "Saving..." : "Subscribe"}
+					</button>
+				</form>
+				{message ? <p className={`newsletter-message ${status}`}>{message}</p> : null}
 			</div>
-			<h1>Vite + React + Hono + Cloudflare</h1>
-			<div className="card">
-				<button
-					onClick={() => setCount((count) => count + 1)}
-					aria-label="increment"
-				>
-					count is {count}
-				</button>
-				<p>
-					Edit <code>src/App.tsx</code> and save to test HMR
-				</p>
-			</div>
-			<div className="card">
-				<button
-					onClick={() => {
-						fetch("/api/")
-							.then((res) => res.json() as Promise<{ name: string }>)
-							.then((data) => setName(data.name));
-					}}
-					aria-label="get name"
-				>
-					Name from API is: {name}
-				</button>
-				<p>
-					Edit <code>worker/index.ts</code> to change the name
-				</p>
-			</div>
-			<p className="read-the-docs">Click on the logos to learn more</p>
-		</>
+		</main>
 	);
 }
 
