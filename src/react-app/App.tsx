@@ -1,24 +1,26 @@
 import { useState } from "react";
 import "./App.css";
 
-const waitlistEndpoint = import.meta.env.VITE_WAITLIST_ENDPOINT;
+const waitlistEndpoint = import.meta.env.VITE_WAITLIST_ENDPOINT ?? "/api/subscribe";
 
 async function submitWaitlistEmail(email: string) {
-	if (!waitlistEndpoint) {
-		throw new Error("Waitlist endpoint is not configured.");
-	}
-
 	const response = await fetch(waitlistEndpoint, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify({ email }),
+		body: JSON.stringify({ email, source: "khomor-landing" }),
 	});
 
+	const payload = (await response.json().catch(() => null)) as
+		| { message?: string; duplicate?: boolean }
+		| null;
+
 	if (!response.ok) {
-		throw new Error("Failed to save the email.");
+		throw new Error(payload?.message ?? "Failed to save the email.");
 	}
+
+	return payload;
 }
 
 function App() {
@@ -38,13 +40,21 @@ function App() {
 		try {
 			setStatus("submitting");
 			setMessage("");
-			await submitWaitlistEmail(email.trim());
+			const result = await submitWaitlistEmail(email.trim());
 			setStatus("success");
-			setMessage("Thanks, you are on the waitlist.");
+			setMessage(
+				result?.duplicate
+					? "This email is already on the waitlist."
+					: "Thanks, you are on the waitlist.",
+			);
 			setEmail("");
-		} catch {
+		} catch (error) {
 			setStatus("error");
-			setMessage("Could not save your email yet. Please try again later.");
+			setMessage(
+				error instanceof Error
+					? error.message
+					: "Could not save your email yet. Please try again later.",
+			);
 		}
 	}
 
