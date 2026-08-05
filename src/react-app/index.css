@@ -1,5 +1,5 @@
 :root {
-	font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+	font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 	line-height: 1.5;
 	font-weight: 400;
 	color: #ffffff;
@@ -19,6 +19,7 @@ body {
 	margin: 0;
 	min-width: 320px;
 	min-height: 100vh;
+	font-family: inherit;
 }
 
 button,

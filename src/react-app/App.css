@@ -17,20 +17,19 @@
 }
 
 .landing-page h1 {
-	max-width: 15ch;
 	margin: 0;
 	font-size: clamp(2.4rem, 4.2vw, 4.6rem);
 	line-height: 1.02;
-	font-weight: 800;
-	letter-spacing: -0.04em;
+	font-weight: 600;
+	letter-spacing: 0.02em;
 	text-wrap: balance;
-	color: #ffffff;
+	color: #C9C9C9;
 	text-shadow: 0 10px 30px rgba(0, 0, 0, 0.24);
 }
 
 .title-emphasis {
 	font-style: italic;
-	font-family: Georgia, "Times New Roman", serif;
+	font-family: "Instrument Serif",Inter, system-ui, Georgia, "Times New Roman", serif;
 	font-weight: 500;
 }
 
@@ -47,20 +46,20 @@
 	font-weight: 700;
 	letter-spacing: 0.28em;
 	text-transform: uppercase;
-	color: rgba(255, 255, 255, 0.88);
+	color: #C9C9C9
 }
 
 .newsletter-form {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-	gap: 1rem;
+	gap: 0.5rem;
 	width: min(100%, 640px);
 }
 
 .newsletter-form input,
 .newsletter-form button {
-	height: 3.5rem;
+	height: 2.7rem;
 	border: 0;
 	border-radius: 8px;
 	font: inherit;
@@ -68,7 +67,7 @@
 
 .newsletter-form input {
 	flex: 1 1 260px;
-	max-width: 320px;
+	max-width: 280px;
 	padding: 0 1.25rem;
 	background: rgba(255, 255, 255, 0.94);
 	color: #111827;
@@ -85,9 +84,9 @@
 
 .newsletter-form button {
 	padding: 0 1.5rem;
-	background: #111827;
+	background: rgb(51, 51, 51);
 	color: #ffffff;
-	font-weight: 700;
+	font-weight: 500;
 	box-shadow: 0 12px 30px rgba(17, 24, 39, 0.28);
 	transition:
 		transform 150ms ease,
